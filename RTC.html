@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="description" content="WebRTC code samples">
+        <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+        <meta itemprop="description" content="Client-side WebRTC code samples">
+        <meta itemprop="name" content="WebRTC code samples">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta id="theme-color" name="theme-color" content="#ffffff">
+
+        <base target="_blank">
+
+        <title>getUserMedia to canvas</title>
+        <style>
+* {
+    margin: 0;
+    padding: 0;
+}
+      .v0 {
+          position: fixed;
+          top: 100%;
+      }
+      .canvas {
+          position: fixed;
+          top: 0;
+          left: 100px;
+          width: 200px;
+          height: 100%;
+          background: #66ccff;
+      }
+      .canvas00 {
+          position: fixed;
+          top: 0;
+          left: 500px;
+          width: 200px;
+          height: 100%;
+      }
+        </style>
+
+    </head>
+
+    <body>
+
+        <div id="container">
+            <div class="canvas"></div>
+            <canvas class="canvas00"></canvas>
+
+
+            <video class="v0" playsinline autoplay></video>
+
+        </div>
+
+
+        <script>
+            const video = document.querySelector('video');
+
+            const constraints = {
+                            audio: true,
+                            video: { width: document.documentElement.clientWidth, height: document.documentElement.clientHeight }
+                        }
+
+            function handleSuccess(stream) {
+                            window.stream = stream; // make stream available to browser console
+                            video.srcObject = stream;
+                        }
+
+            function handleError(error) {
+                            console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+                        }
+
+            navigator.mediaDevices.getDisplayMedia(constraints).then(handleSuccess).catch(handleError);
+
+            const canvas = document.querySelector('.canvas00');
+            const ctx = canvas.getContext('2d');
+            const loop = function() {
+                            ctx.clearRect(0, 0,canvas.width,canvas.height)
+                            ctx.drawImage(video, 100, 0, 200, canvas.height, 0, 0, 200, canvas.height)  //绘制视频
+                            requestAnimationFrame(loop);
+                        };
+            loop();
+            const resize = function() {
+                            canvas.width = canvas.clientWidth;
+                            canvas.height = canvas.clientHeight;
+                        };
+            resize();
+            window.addEventListener('resize', resize);
+        </script>
+    </body>
+</html>
